@@ -70,6 +70,7 @@ export function useAuth() {
         user_id: user.id,
         name: userName || 'Usuário',
         avatar_url: user.user_metadata?.avatar_url || user.user_metadata?.picture || null,
+        onboarding_completed: false, // Novos usuários precisam completar onboarding
       };
 
       if (existingProfile) {
