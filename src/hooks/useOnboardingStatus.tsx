@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useAuth } from './useAuth';
 import { supabase } from '@/integrations/supabase/client';
 
@@ -6,14 +6,20 @@ export const useOnboardingStatus = () => {
   const { user } = useAuth();
   const [onboardingCompleted, setOnboardingCompleted] = useState<boolean | null>(null);
   const [loading, setLoading] = useState(true);
+  const hasChecked = useRef(false);
 
   useEffect(() => {
     const checkOnboardingStatus = async () => {
+      // Prevenir múltiplas verificações
+      if (hasChecked.current) return;
+      
       if (!user) {
         setOnboardingCompleted(false);
         setLoading(false);
         return;
       }
+
+      hasChecked.current = true;
 
       try {
         const { data, error } = await supabase
@@ -40,7 +46,7 @@ export const useOnboardingStatus = () => {
     };
 
     checkOnboardingStatus();
-  }, [user]);
+  }, [user?.id]);
 
   return { onboardingCompleted, loading };
 };
