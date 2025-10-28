@@ -5,17 +5,17 @@ import { useChat } from '@/hooks/useChat';
 
 const NutriAI = () => {
   const { user } = useAuth();
-  const { messages, sendMessage, startConversation, isProcessing } = useChat();
+  const [userGender, setUserGender] = useState<'male' | 'female'>('male');
+  const { messages, sendMessage, startConversation, isProcessing } = useChat(userGender);
   const [isActive, setIsActive] = useState(false);
   const [isListening, setIsListening] = useState(false);
   const [profileName, setProfileName] = useState<string>('');
-  const [userGender, setUserGender] = useState<'male' | 'female'>('female');
   const recognitionRef = useRef<any>(null);
   const isRecognitionActive = useRef(false);
 
-  // ✅ BUSCAR NOME DO PERFIL DO USUÁRIO
+  // ✅ BUSCAR NOME DO PERFIL E GÊNERO DO USUÁRIO
   useEffect(() => {
-    const fetchProfileName = async () => {
+    const fetchProfileData = async () => {
       if (!user?.id) return;
       
       const { data, error } = await supabase
@@ -27,9 +27,15 @@ const NutriAI = () => {
       if (data?.name) {
         setProfileName(data.name);
       }
+      
+      // Buscar gênero do localStorage
+      const storedGender = localStorage.getItem('userGender') as 'male' | 'female';
+      if (storedGender) {
+        setUserGender(storedGender);
+      }
     };
     
-    fetchProfileName();
+    fetchProfileData();
   }, [user]);
 
   // ✅ EXTRAIR PRIMEIRO NOME DO PERFIL

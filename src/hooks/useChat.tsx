@@ -20,7 +20,7 @@ interface Intent {
   data?: string;
 }
 
-export const useChat = () => {
+export const useChat = (userGender: 'male' | 'female' = 'male') => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [isProcessing, setIsProcessing] = useState(false);
   const [userName, setUserName] = useState('');
@@ -157,7 +157,7 @@ export const useChat = () => {
 
       // Falar a resposta se solicitado
       if (useVoice && !isVoiceLoading) {
-        await speak(aiResponse, 'female');
+        await speak(aiResponse, userGender);
       }
 
     } catch (error) {
@@ -171,7 +171,7 @@ export const useChat = () => {
     } finally {
       setIsProcessing(false);
     }
-  }, [analyzeIntent, generateResponse, speak, isProcessing, isVoiceLoading]);
+  }, [analyzeIntent, generateResponse, speak, isProcessing, isVoiceLoading, userGender]);
 
   // Inicializar conversa
   const startConversation = useCallback(async () => {
@@ -184,8 +184,8 @@ export const useChat = () => {
     chatHistoryRef.current = [welcomeMessage];
     
     // Falar a mensagem de boas-vindas
-    setTimeout(() => speak('Olá! Eu sou seu NutriAI. Qual é o seu nome?', 'female'), 1000);
-  }, [speak]);
+    setTimeout(() => speak('Olá! Eu sou seu NutriAI. Qual é o seu nome?', userGender), 1000);
+  }, [speak, userGender]);
 
   return {
     messages,
