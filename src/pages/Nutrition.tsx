@@ -220,31 +220,31 @@ const Nutrition = () => {
           .insert({
             user_id: session.session.user.id,
             name: mealName,
-            foods: functionData.foods,
-            total_calories: functionData.totals.calories,
-            total_protein: functionData.totals.protein,
-            total_carbs: functionData.totals.carbs,
-            total_fat: functionData.totals.fat,
-            is_estimated: functionData.isEstimated || false,
-            notes: functionData.notes || null
+            calories: Math.round(functionData.totals.calories),
+            protein: functionData.totals.protein,
+            carbs: functionData.totals.carbs,
+            fat: functionData.totals.fat,
+            meal_time: new Date().toISOString()
           });
         
         if (saveError) {
+          console.error("Erro ao salvar refeição:", saveError);
           toast({
-            title: "Análise OK, mas erro ao salvar",
-            description: "A análise foi feita mas não foi possível salvar no histórico.",
+            title: "Erro ao salvar",
+            description: "Não foi possível salvar a refeição no histórico.",
             variant: "destructive",
           });
         } else {
-          // Recarregar lista de refeições
-          loadTodayMeals();
+          // Recarregar lista de refeições para atualizar o resumo
+          await loadTodayMeals();
+          toast({
+            title: "Refeição salva! 🎉",
+            description: `${Math.round(functionData.totals.calories)} kcal adicionadas ao seu dia`,
+          });
         }
       }
 
-      toast({
-        title: "Análise Concluída! 🎉",
-        description: `Alimentos identificados:\n${foodsList}\n\n✨ Total: ${Math.round(functionData.totals.calories)} kcal\nProteínas: ${functionData.totals.protein}g | Carbs: ${functionData.totals.carbs}g | Gorduras: ${functionData.totals.fat}g${functionData.isEstimated ? '\n⚠️ Valores estimados' : ''}`,
-      });
+      // Toast removido daqui - será mostrado após salvar com sucesso
       
     } catch (error) {
       let errorMessage = "Não foi possível analisar a imagem. Tente novamente.";
@@ -278,10 +278,10 @@ const Nutrition = () => {
   // Calcular totais das refeições do dia
   const calculateDailyTotals = () => {
     return savedMeals.reduce((totals, meal) => ({
-      calories: totals.calories + (Number(meal.total_calories) || 0),
-      protein: totals.protein + (Number(meal.total_protein) || 0),
-      carbs: totals.carbs + (Number(meal.total_carbs) || 0),
-      fat: totals.fat + (Number(meal.total_fat) || 0)
+      calories: totals.calories + (Number(meal.calories) || 0),
+      protein: totals.protein + (Number(meal.protein) || 0),
+      carbs: totals.carbs + (Number(meal.carbs) || 0),
+      fat: totals.fat + (Number(meal.fat) || 0)
     }), { calories: 0, protein: 0, carbs: 0, fat: 0 });
   };
 
