@@ -73,7 +73,6 @@ const OnboardingFlow = () => {
             age: age,
             weight: data.weight,
             height: data.height,
-            gender: data.gender,
             fitness_goal: fitnessGoal,
             onboarding_completed: true
           } as any, {
