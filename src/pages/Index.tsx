@@ -10,6 +10,7 @@ import workoutsImage from "@/assets/workouts-hero.jpg";
 import { AuthDialog } from "@/components/AuthDialog";
 import { useAuth } from "@/hooks/useAuth";
 import { useOnboardingStatus } from "@/hooks/useOnboardingStatus";
+import { Clock } from "@/components/Clock";
 
 const Index = () => {
   const [authDialogOpen, setAuthDialogOpen] = useState(false);
@@ -70,6 +71,10 @@ const Index = () => {
             <p className="text-lg mb-12 text-white/80 max-w-2xl mx-auto">
               Combine treinos inteligentes com análise nutricional por IA. Alcance seus objetivos fitness com precisão científica.
             </p>
+            
+            <div className="flex justify-center mb-8">
+              <Clock />
+            </div>
             
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Button 
