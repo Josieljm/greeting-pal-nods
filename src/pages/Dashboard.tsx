@@ -11,7 +11,6 @@ import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useMotivationalMessage } from "@/hooks/useMotivationalMessage";
 import { WelcomeVoice } from "@/components/WelcomeVoice";
-import { Clock } from "@/components/Clock";
 
 const Dashboard = () => {
   const { user } = useAuth();
@@ -117,7 +116,6 @@ const Dashboard = () => {
             </div>
             <p className="motivational-text text-primary font-medium">{motivationalMessage}</p>
           </div>
-          <Clock />
           <div className="flex gap-2">
             <Link to="/workouts">
               <Button variant="fitness" size="sm">
