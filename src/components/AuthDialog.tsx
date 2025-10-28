@@ -104,7 +104,7 @@ export function AuthDialog({ open, onOpenChange }: AuthDialogProps) {
 
     try {
       if (isLogin) {
-        const { error } = await supabase.auth.signInWithPassword({
+        const { error, data } = await supabase.auth.signInWithPassword({
           email,
           password,
         });
@@ -120,8 +120,22 @@ export function AuthDialog({ open, onOpenChange }: AuthDialogProps) {
           onOpenChange(false);
           setEmail("");
           setPassword("");
-          // Redireciona para o dashboard após login bem-sucedido
-          navigate("/dashboard");
+          
+          // Verifica se o usuário já completou o onboarding
+          const { data: profileData } = await supabase
+            .from('profiles' as any)
+            .select('onboarding_completed')
+            .eq('user_id', data.user.id)
+            .maybeSingle();
+          
+          const profile = profileData as any;
+          
+          // Redireciona baseado no status do onboarding
+          if (profile?.onboarding_completed) {
+            navigate("/dashboard");
+          } else {
+            navigate("/onboarding");
+          }
         }
       } else {
         const { error } = await supabase.auth.signUp({
