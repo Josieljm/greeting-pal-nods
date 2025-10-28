@@ -16,6 +16,10 @@ import Exercises from "./pages/Exercises";
 import NotFound from "./pages/NotFound";
 import OnboardingFlow from "./components/onboarding/OnboardingFlow";
 import ResetPassword from "./pages/ResetPassword";
+import CaloriesBurnedPage from "./pages/CaloriesBurnedPage";
+import HydrationPage from "./pages/HydrationPage";
+import ProteinGoalPage from "./pages/ProteinGoalPage";
+import WorkoutTimePage from "./pages/WorkoutTimePage";
 
 const queryClient = new QueryClient();
 
@@ -38,6 +42,10 @@ const App = () => (
             <Route path="/progress" element={<Progress />} />
             <Route path="/profile" element={<Profile />} />
             <Route path="/exercises" element={<Exercises />} />
+            <Route path="/stats/calories-burned" element={<CaloriesBurnedPage />} />
+            <Route path="/stats/hydration" element={<HydrationPage />} />
+            <Route path="/stats/protein-goal" element={<ProteinGoalPage />} />
+            <Route path="/stats/workout-time" element={<WorkoutTimePage />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>

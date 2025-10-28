@@ -12,9 +12,9 @@ interface StatCardProps {
 
 export function StatCard({ icon, title, value, change, variant = "default", className }: StatCardProps) {
   const variantClasses = {
-    fitness: "glass-card border-primary/20 hover:border-primary/40 transition-smooth",
-    nutrition: "glass-card border-secondary/20 hover:border-secondary/40 transition-smooth",
-    default: "glass-card border-border hover:border-muted-foreground/40 transition-smooth"
+    fitness: "glass-card border-primary/20 hover:border-primary/40 transition-smooth cursor-pointer hover:scale-105",
+    nutrition: "glass-card border-secondary/20 hover:border-secondary/40 transition-smooth cursor-pointer hover:scale-105",
+    default: "glass-card border-border hover:border-muted-foreground/40 transition-smooth cursor-pointer hover:scale-105"
   };
 
   const iconClasses = {
