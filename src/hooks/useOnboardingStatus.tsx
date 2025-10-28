@@ -17,10 +17,10 @@ export const useOnboardingStatus = () => {
 
       try {
         const { data, error } = await supabase
-          .from('profiles')
+          .from('profiles' as any)
           .select('onboarding_completed')
           .eq('user_id', user.id)
-          .single();
+          .maybeSingle();
 
         if (error) {
           console.error('Erro ao buscar status do onboarding:', error);
@@ -28,7 +28,8 @@ export const useOnboardingStatus = () => {
           const localStatus = localStorage.getItem('onboardingCompleted') === 'true';
           setOnboardingCompleted(localStatus);
         } else {
-          setOnboardingCompleted(data?.onboarding_completed || false);
+          const profile = data as any;
+          setOnboardingCompleted(!!profile?.onboarding_completed);
         }
       } catch (error) {
         console.error('Erro ao verificar onboarding:', error);

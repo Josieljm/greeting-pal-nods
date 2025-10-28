@@ -19,13 +19,14 @@ const NutriAI = () => {
       if (!user?.id) return;
       
       const { data, error } = await supabase
-        .from('profiles')
+        .from('profiles' as any)
         .select('name')
         .eq('user_id', user.id)
-        .single();
+        .maybeSingle();
       
-      if (data?.name) {
-        setProfileName(data.name);
+      const profile = data as any;
+      if (profile && profile.name) {
+        setProfileName(profile.name);
       }
       
       // Buscar gênero do localStorage

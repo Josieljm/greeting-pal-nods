@@ -175,14 +175,14 @@ export const EditableAvatar = ({ name, currentAvatarUrl, onAvatarUpdate }: Edita
 
       // Salvar no perfil do usuário
       const { error: profileError } = await supabase
-        .from('profiles')
+        .from('profiles' as any)
         .upsert({
           user_id: user.id,
           avatar_url: publicUrl,
           updated_at: new Date().toISOString()
-        }, {
+        } as any, {
           onConflict: 'user_id'
-        });
+        } as any);
 
       if (profileError) throw profileError;
 

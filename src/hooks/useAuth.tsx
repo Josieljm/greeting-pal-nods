@@ -37,21 +37,22 @@ export function useAuth() {
   const updateProfileFromOAuth = async (user: User) => {
     try {
       const { data: existingProfile } = await supabase
-        .from('profiles')
+        .from('profiles' as any)
         .select('*')
         .eq('user_id', user.id)
-        .single();
+        .maybeSingle();
 
       // Se já existe um perfil com nome válido (não é email), não sobrescrever
-      if (existingProfile?.name && 
-          !existingProfile.name.includes('@') && 
-          existingProfile.name !== 'Usuário') {
+      const profileData = existingProfile as any;
+      if (profileData?.name && 
+          !profileData.name.includes('@') && 
+          profileData.name !== 'Usuário') {
         // Apenas atualizar avatar se necessário
         const newAvatar = user.user_metadata?.avatar_url || user.user_metadata?.picture;
-        if (newAvatar && newAvatar !== existingProfile.avatar_url) {
+        if (newAvatar && newAvatar !== profileData.avatar_url) {
           await supabase
-            .from('profiles')
-            .update({ avatar_url: newAvatar })
+            .from('profiles' as any)
+            .update({ avatar_url: newAvatar } as any)
             .eq('user_id', user.id);
         }
         return;
@@ -65,7 +66,7 @@ export function useAuth() {
         userName = user.email.split('@')[0];
       }
 
-      const profileData = {
+      const profilePayload = {
         user_id: user.id,
         name: userName || 'Usuário',
         avatar_url: user.user_metadata?.avatar_url || user.user_metadata?.picture || null,
@@ -73,13 +74,13 @@ export function useAuth() {
 
       if (existingProfile) {
         await supabase
-          .from('profiles')
-          .update(profileData)
+          .from('profiles' as any)
+          .update(profilePayload as any)
           .eq('user_id', user.id);
       } else {
         await supabase
-          .from('profiles')
-          .insert(profileData);
+          .from('profiles' as any)
+          .insert(profilePayload as any);
       }
     } catch (error) {
       // Silently fail in production, log only in development

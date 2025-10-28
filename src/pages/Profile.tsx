@@ -66,10 +66,10 @@ const Profile = () => {
       try {
         // Buscar perfil do Supabase
         const { data: profile } = await supabase
-          .from('profiles')
+          .from('profiles' as any)
           .select('*')
           .eq('user_id', user.id)
-          .single();
+          .maybeSingle();
 
         if (profile) {
           setAvatarUrl(profile.avatar_url || '');
@@ -188,13 +188,13 @@ const Profile = () => {
       if (!user) return;
 
       const { data: profile } = await supabase
-        .from('profiles')
+        .from('profiles' as any)
         .select('*')
         .eq('user_id', user.id)
-        .single();
+        .maybeSingle();
 
       const { data: meals } = await supabase
-        .from('meals')
+        .from('meals' as any)
         .select('*')
         .eq('user_id', user.id);
 
@@ -270,8 +270,8 @@ const Profile = () => {
       if (!user) return;
 
       // Deletar dados do usuário
-      await supabase.from('meals').delete().eq('user_id', user.id);
-      await supabase.from('profiles').delete().eq('user_id', user.id);
+      await supabase.from('meals' as any).delete().eq('user_id', user.id);
+      await supabase.from('profiles' as any).delete().eq('user_id', user.id);
 
       // Fazer logout
       await signOut();

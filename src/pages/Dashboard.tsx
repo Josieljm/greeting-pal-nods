@@ -28,7 +28,7 @@ const Dashboard = () => {
       if (!user) return;
 
       const { data: profile, error } = await supabase
-        .from('profiles')
+        .from('profiles' as any)
         .select('name')
         .eq('user_id', user.id)
         .maybeSingle();
@@ -71,14 +71,14 @@ const Dashboard = () => {
       tomorrow.setDate(tomorrow.getDate() + 1);
 
       const { data: meals } = await supabase
-        .from('meals')
+        .from('meals' as any)
         .select('total_calories, total_protein, total_carbs, total_fat')
         .eq('user_id', user.id)
         .gte('timestamp', today.toISOString())
         .lt('timestamp', tomorrow.toISOString());
 
-      if (meals && meals.length > 0) {
-        const totals = meals.reduce((acc, meal) => ({
+      if (Array.isArray(meals) && meals.length > 0) {
+        const totals = (meals as any[]).reduce((acc, meal: any) => ({
           calories: acc.calories + (Number(meal.total_calories) || 0),
           protein: acc.protein + (Number(meal.total_protein) || 0),
           carbs: acc.carbs + (Number(meal.total_carbs) || 0),
