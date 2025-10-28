@@ -14,7 +14,81 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      meals: {
+        Row: {
+          created_at: string
+          id: string
+          timestamp: string
+          total_calories: number | null
+          total_carbs: number | null
+          total_fat: number | null
+          total_protein: number | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          timestamp?: string
+          total_calories?: number | null
+          total_carbs?: number | null
+          total_fat?: number | null
+          total_protein?: number | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          timestamp?: string
+          total_calories?: number | null
+          total_carbs?: number | null
+          total_fat?: number | null
+          total_protein?: number | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      profiles: {
+        Row: {
+          age: number | null
+          avatar_url: string | null
+          created_at: string
+          fitness_goal: string | null
+          height: number | null
+          id: string
+          name: string
+          onboarding_completed: boolean | null
+          updated_at: string
+          user_id: string
+          weight: number | null
+        }
+        Insert: {
+          age?: number | null
+          avatar_url?: string | null
+          created_at?: string
+          fitness_goal?: string | null
+          height?: number | null
+          id?: string
+          name?: string
+          onboarding_completed?: boolean | null
+          updated_at?: string
+          user_id: string
+          weight?: number | null
+        }
+        Update: {
+          age?: number | null
+          avatar_url?: string | null
+          created_at?: string
+          fitness_goal?: string | null
+          height?: number | null
+          id?: string
+          name?: string
+          onboarding_completed?: boolean | null
+          updated_at?: string
+          user_id?: string
+          weight?: number | null
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
