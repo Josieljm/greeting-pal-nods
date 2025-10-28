@@ -139,12 +139,12 @@ export function AuthDialog({ open, onOpenChange }: AuthDialogProps) {
             toast.error(error.message);
           }
         } else {
-          toast.success("Conta criada com sucesso! Você já está logado.");
+          toast.success("Conta criada com sucesso! Vamos começar o onboarding.");
           onOpenChange(false);
           setEmail("");
           setPassword("");
-          // Redireciona para o dashboard após cadastro bem-sucedido
-          navigate("/dashboard");
+          // Redireciona para o onboarding após cadastro bem-sucedido
+          navigate("/onboarding");
         }
       }
     } catch (error) {
