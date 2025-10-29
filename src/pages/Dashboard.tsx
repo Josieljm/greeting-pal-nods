@@ -15,6 +15,7 @@ import { WelcomeVoice } from "@/components/WelcomeVoice";
 const Dashboard = () => {
   const { user } = useAuth();
   const [userName, setUserName] = useState<string>('');
+  const [proteinGoal, setProteinGoal] = useState(120);
   const motivationalMessage = useMotivationalMessage();
   const [nutritionData, setNutritionData] = useState({
     calories: 0,
@@ -30,11 +31,15 @@ const Dashboard = () => {
 
       const { data: profile, error } = await supabase
         .from('profiles')
-        .select('name')
+        .select('name, daily_protein_goal')
         .eq('user_id', user.id)
         .maybeSingle();
 
       console.log('Profile data:', profile, 'Error:', error);
+
+      if (profile?.daily_protein_goal) {
+        setProteinGoal(profile.daily_protein_goal);
+      }
 
       if (profile?.name) {
         let firstName = profile.name.trim();
@@ -113,10 +118,12 @@ const Dashboard = () => {
     loadTodayCaloriesBurned();
   }, [user]);
 
+  const proteinPercentage = proteinGoal > 0 ? Math.round((nutritionData.protein / proteinGoal) * 100) : 0;
+  
   const todayStats = [
     { icon: <Flame className="w-6 h-6" />, title: "Calorias Queimadas", value: `${caloriesBurned}`, change: caloriesBurned > 0 ? `${caloriesBurned} kcal` : "0 kcal", variant: "fitness" as const, link: "/stats/calories-burned" },
     { icon: <Droplets className="w-6 h-6" />, title: "Água Consumida", value: "1.8L", change: "+5%", variant: "default" as const, link: "/stats/hydration" },
-    { icon: <Target className="w-6 h-6" />, title: "Meta de Proteína", value: "85g", change: "+12%", variant: "nutrition" as const, link: "/stats/protein-goal" },
+    { icon: <Target className="w-6 h-6" />, title: "Meta de Proteína", value: `${Math.round(nutritionData.protein)}g`, change: `${proteinPercentage}% da meta`, variant: "nutrition" as const, link: "/stats/protein-goal" },
     { icon: <ClockIcon className="w-6 h-6" />, title: "Tempo de Treino", value: "45min", variant: "fitness" as const, link: "/stats/workout-time" },
   ];
 
