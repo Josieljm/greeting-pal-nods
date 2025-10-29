@@ -515,50 +515,55 @@ const Nutrition = () => {
                       </div>
                     </div>
 
-                    {selectedMeal === meal.id && (
-                      <div className="mt-4 pt-4 border-t border-border/50">
-                        <h4 className="font-medium mb-3">Alimentos identificados:</h4>
-                        
-                        {meal.foods_details && Array.isArray(meal.foods_details) ? (
-                          <ul className="space-y-3">
-                            {meal.foods_details.map((food: any, index: number) => (
-                              <li key={index} className="text-sm">
-                                <div className="flex items-start gap-2">
-                                  <span className="text-orange-500 mt-0.5">•</span>
-                                  <div className="flex-1">
-                                    <span className="font-medium">
-                                      {food.name} ({food.portionGrams || food.portion}g)
-                                    </span>
-                                    <span className="ml-2 text-muted-foreground">- {food.calories} kcal</span>
-                                    {food.isEstimated && (
-                                      <span className="ml-2 text-xs text-muted-foreground">(estimado)</span>
-                                    )}
-                                    {food.description && (
-                                      <p className="mt-1 text-xs text-muted-foreground italic leading-relaxed">
-                                        {food.description}
-                                      </p>
-                                    )}
+                      {selectedMeal === meal.id && (
+                        <div className="mt-4 pt-4 border-t border-border/50">
+                          <h4 className="font-medium mb-3">Alimentos identificados:</h4>
+                          
+                          {meal.foods_details && Array.isArray(meal.foods_details) ? (
+                            <ul className="space-y-4">
+                              {meal.foods_details.map((food: any, index: number) => (
+                                <li key={index} className="text-sm">
+                                  <div className="flex items-start gap-2">
+                                    <span className="text-orange-500 mt-0.5">•</span>
+                                    <div className="flex-1">
+                                      <div>
+                                        <span className="font-normal">
+                                          {food.name} ({food.portionGrams || food.portion}g)
+                                        </span>
+                                        <span className="ml-2">- {food.calories} kcal</span>
+                                        {food.isEstimated && (
+                                          <span className="ml-2 text-muted-foreground">(estimado)</span>
+                                        )}
+                                      </div>
+                                      {food.description && (
+                                        <p className="mt-2 text-sm text-muted-foreground italic leading-relaxed">
+                                          {food.description}
+                                        </p>
+                                      )}
+                                    </div>
                                   </div>
-                                </div>
+                                </li>
+                              ))}
+                            </ul>
+                          ) : (
+                            <ul className="space-y-2">
+                              <li className="text-sm flex items-start gap-2">
+                                <span className="text-orange-500 mt-0.5">•</span>
+                                <span>{meal.name} (600g) - {Math.round(meal.calories || 0)} kcal</span>
                               </li>
-                            ))}
-                          </ul>
-                        ) : (
-                          <div className="text-sm text-muted-foreground">
-                            {meal.name}
+                            </ul>
+                          )}
+                          
+                          <div className="flex gap-2 mt-4">
+                            <Button variant="nutrition-outline" size="sm">
+                              Editar
+                            </Button>
+                            <Button variant="outline" size="sm">
+                              Duplicar
+                            </Button>
                           </div>
-                        )}
-                        
-                        <div className="flex gap-2 mt-4">
-                          <Button variant="nutrition-outline" size="sm">
-                            Editar
-                          </Button>
-                          <Button variant="outline" size="sm">
-                            Duplicar
-                          </Button>
                         </div>
-                      </div>
-                    )}
+                      )}
                   </div>
                 );
               })}
