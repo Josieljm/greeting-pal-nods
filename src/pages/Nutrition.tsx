@@ -200,14 +200,14 @@ const Nutrition = () => {
         throw new Error(functionData?.error || "Resposta inválida da análise");
       }
 
-      // Formatar resultados para exibição
+      // Formatar resultados para exibição completa
       const foodsList = functionData.foods
         .map((food: any) => {
           const confidence = food.confidence === "alta" ? "✓" : 
                            food.confidence === "média" ? "~" : "?";
-          return `${confidence} ${food.name} (${food.portion || food.portionGrams + 'g'})`;
+          return `${confidence} ${food.name} (aproximadamente ${food.portionGrams || food.portion}g)`;
         })
-        .join("\n");
+        .join(" ~ ");
 
       // Salvar refeição no banco de dados
       const mealName = `Refeição: ${functionData.foods.map((f: any) => f.name).slice(0, 3).join(", ")}${functionData.foods.length > 3 ? '...' : ''}`;
@@ -237,9 +237,12 @@ const Nutrition = () => {
         } else {
           // Recarregar lista de refeições para atualizar o resumo
           await loadTodayMeals();
+          
+          // Toast com análise completa
           toast({
-            title: "Refeição salva! 🎉",
-            description: `${Math.round(functionData.totals.calories)} kcal adicionadas ao seu dia`,
+            title: "Análise Concluída! 🎉",
+            description: `Alimentos identificados: ${foodsList} ✨ Total: ${Math.round(functionData.totals.calories)} kcal | Proteínas: ${functionData.totals.protein}g | Carbs: ${functionData.totals.carbs}g | Gorduras: ${functionData.totals.fat}g`,
+            duration: 8000,
           });
         }
       }
