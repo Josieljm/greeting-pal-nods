@@ -14,6 +14,42 @@ export type Database = {
   }
   public: {
     Tables: {
+      calories_burned: {
+        Row: {
+          activity_type: string | null
+          calories: number
+          created_at: string
+          date: string
+          duration_minutes: number | null
+          id: string
+          notes: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          activity_type?: string | null
+          calories: number
+          created_at?: string
+          date?: string
+          duration_minutes?: number | null
+          id?: string
+          notes?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          activity_type?: string | null
+          calories?: number
+          created_at?: string
+          date?: string
+          duration_minutes?: number | null
+          id?: string
+          notes?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       meals: {
         Row: {
           calories: number | null
@@ -67,6 +103,7 @@ export type Database = {
           age: number | null
           avatar_url: string | null
           created_at: string
+          daily_calories_burn_goal: number | null
           daily_calories_goal: number | null
           daily_carbs_goal: number | null
           daily_fat_goal: number | null
@@ -84,6 +121,7 @@ export type Database = {
           age?: number | null
           avatar_url?: string | null
           created_at?: string
+          daily_calories_burn_goal?: number | null
           daily_calories_goal?: number | null
           daily_carbs_goal?: number | null
           daily_fat_goal?: number | null
@@ -101,6 +139,7 @@ export type Database = {
           age?: number | null
           avatar_url?: string | null
           created_at?: string
+          daily_calories_burn_goal?: number | null
           daily_calories_goal?: number | null
           daily_carbs_goal?: number | null
           daily_fat_goal?: number | null
