@@ -65,6 +65,7 @@ export default {
       },
       fontFamily: {
         sans: ["Inter", "system-ui", "sans-serif"],
+        notes: ["Merriweather", "Georgia", "serif"],
       },
       backgroundImage: {
         "gradient-fitness": "var(--gradient-fitness)",

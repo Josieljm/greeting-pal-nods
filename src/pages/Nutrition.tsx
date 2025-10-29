@@ -561,7 +561,7 @@ const Nutrition = () => {
                         {meal.notes && (
                           <div className="mb-6 pb-4 border-b border-border/50">
                             <h4 className="font-semibold mb-2 text-base">Descrição Detalhada:</h4>
-                            <p className="text-sm text-muted-foreground leading-relaxed">
+                            <p className="text-sm text-muted-foreground leading-relaxed font-notes italic">
                               {meal.notes}
                             </p>
                           </div>
