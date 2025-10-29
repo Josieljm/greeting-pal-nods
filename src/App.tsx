@@ -20,6 +20,7 @@ import CaloriesBurnedPage from "./pages/CaloriesBurnedPage";
 import HydrationPage from "./pages/HydrationPage";
 import ProteinGoalPage from "./pages/ProteinGoalPage";
 import WorkoutTimePage from "./pages/WorkoutTimePage";
+import WorkoutPlayer from "./pages/WorkoutPlayer";
 
 const queryClient = new QueryClient();
 
@@ -46,6 +47,7 @@ const App = () => (
             <Route path="/stats/hydration" element={<HydrationPage />} />
             <Route path="/stats/protein-goal" element={<ProteinGoalPage />} />
             <Route path="/stats/workout-time" element={<WorkoutTimePage />} />
+            <Route path="/workout-player/:id" element={<WorkoutPlayer />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>
