@@ -3,9 +3,54 @@ import { useVoice } from "@/hooks/useVoice";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 
-// Voice feature temporarily disabled due to ElevenLabs API limitations
-// To re-enable: get a valid ElevenLabs API key and uncomment the code below
 export const WelcomeVoice = () => {
+  const { user } = useAuth();
+  const { speak } = useVoice();
+  const [hasSpoken, setHasSpoken] = useState(false);
+
+  useEffect(() => {
+    const fetchProfileAndSpeak = async () => {
+      if (!user || hasSpoken) return;
+
+      try {
+        const { data: profile } = await supabase
+          .from('profiles')
+          .select('name')
+          .eq('user_id', user.id)
+          .maybeSingle();
+
+        const gender = (localStorage.getItem("userGender") as 'male' | 'female') || 'male';
+        let userName = profile?.name || 'Amigo';
+        
+        // Se for email, pegar parte antes do @ e remover caracteres especiais
+        if (userName.includes('@')) {
+          userName = userName.split('@')[0].replace(/[.+]/g, ' ');
+        }
+        
+        // Pegar apenas primeiro nome
+        let firstName = userName.split(' ')[0];
+        
+        // Capitalizar primeira letra
+        firstName = firstName.charAt(0).toUpperCase() + firstName.slice(1).toLowerCase();
+
+        const welcomeMessage = `Oi! ${firstName}, que ótimo que está de volta no Gym JM, vamos nos seus objetivos agora!`;
+
+        console.log('Speaking welcome message:', welcomeMessage);
+        
+        await speak(welcomeMessage, gender);
+        setHasSpoken(true);
+      } catch (error) {
+        console.error('Error in WelcomeVoice:', error);
+      }
+    };
+
+    const timer = setTimeout(() => {
+      fetchProfileAndSpeak();
+    }, 1500);
+
+    return () => clearTimeout(timer);
+  }, [user, hasSpoken, speak]);
+
   return null;
 };
 
