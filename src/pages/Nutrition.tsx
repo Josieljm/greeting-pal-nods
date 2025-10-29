@@ -466,41 +466,43 @@ const Nutrition = () => {
         </div>
 
         {/* Today's Meals */}
-        <GymCard
-          title="Refeições de Hoje"
-          description="Histórico das suas refeições analisadas"
-        >
+        <div className="space-y-4">
+          <div>
+            <h2 className="text-2xl font-bold">Refeições de Hoje</h2>
+            <p className="text-muted-foreground">Histórico das suas refeições analisadas</p>
+          </div>
+
           {isLoadingMeals ? (
             <div className="text-center py-8 text-muted-foreground">
               Carregando refeições...
             </div>
           ) : savedMeals.length === 0 ? (
-            <div className="text-center py-8 text-muted-foreground">
+            <div className="text-center py-8 text-muted-foreground border border-border/50 rounded-lg p-6">
               <Utensils className="w-12 h-12 mx-auto mb-2 opacity-50" />
               <p>Nenhuma refeição registrada hoje</p>
               <p className="text-sm mt-1">Tire uma foto para começar!</p>
             </div>
           ) : (
-            <div className="space-y-4">
+            <div className="space-y-3">
               {savedMeals.map((meal) => {
                 const mealTime = new Date(meal.meal_time).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
                 
                 return (
                   <div
                     key={meal.id}
-                    className="p-4 rounded-lg glass-card border border-border/50 hover:border-secondary/30 transition-colors cursor-pointer"
+                    className="p-6 rounded-lg glass-card border border-border/50 hover:border-secondary/30 transition-colors cursor-pointer"
                     onClick={() => setSelectedMeal(selectedMeal === meal.id ? null : meal.id)}
                   >
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-3">
-                        <div className="text-2xl">🍽️</div>
-                        <div>
-                          <h3 className="font-semibold">{meal.name}</h3>
+                    <div className="flex items-start justify-between gap-4">
+                      <div className="flex items-start gap-3 flex-1">
+                        <div className="text-3xl">🍽️</div>
+                        <div className="flex-1">
+                          <h3 className="font-semibold text-base mb-1">Refeição: {meal.name.replace('Refeição: ', '')}</h3>
                           <div className="flex items-center gap-2 text-sm text-muted-foreground">
                             <Clock className="w-3 h-3" />
                             {mealTime}
                             {meal.is_estimated && (
-                              <Badge variant="secondary" className="text-xs bg-orange-500/20 text-orange-600 dark:text-orange-400">
+                              <Badge className="text-xs bg-orange-500 hover:bg-orange-500 text-white border-0">
                                 Estimado
                               </Badge>
                             )}
@@ -508,68 +510,68 @@ const Nutrition = () => {
                         </div>
                       </div>
                       <div className="text-right">
-                        <div className="text-lg font-bold text-secondary">{Math.round(meal.calories || 0)} kcal</div>
-                        <div className="text-sm text-muted-foreground">
+                        <div className="text-2xl font-bold text-orange-500">{Math.round(meal.calories || 0)} kcal</div>
+                        <div className="text-sm text-muted-foreground whitespace-nowrap">
                           P: {Math.round((meal.protein || 0) * 10) / 10}g • C: {Math.round((meal.carbs || 0) * 10) / 10}g • G: {Math.round((meal.fat || 0) * 10) / 10}g
                         </div>
                       </div>
                     </div>
 
-                      {selectedMeal === meal.id && (
-                        <div className="mt-4 pt-4 border-t border-border/50">
-                          <h4 className="font-medium mb-3">Alimentos identificados:</h4>
-                          
-                          {meal.foods_details && Array.isArray(meal.foods_details) ? (
-                            <ul className="space-y-4">
-                              {meal.foods_details.map((food: any, index: number) => (
-                                <li key={index} className="text-sm">
-                                  <div className="flex items-start gap-2">
-                                    <span className="text-orange-500 mt-0.5">•</span>
-                                    <div className="flex-1">
-                                      <div>
-                                        <span className="font-normal">
-                                          {food.name} ({food.portionGrams || food.portion}g)
-                                        </span>
-                                        <span className="ml-2">- {food.calories} kcal</span>
-                                        {food.isEstimated && (
-                                          <span className="ml-2 text-muted-foreground">(estimado)</span>
-                                        )}
-                                      </div>
-                                      {food.description && (
-                                        <p className="mt-2 text-sm text-muted-foreground italic leading-relaxed">
-                                          {food.description}
-                                        </p>
+                    {selectedMeal === meal.id && (
+                      <div className="mt-6 pt-4 border-t border-border/50">
+                        <h4 className="font-semibold mb-4">Alimentos identificados:</h4>
+                        
+                        {meal.foods_details && Array.isArray(meal.foods_details) ? (
+                          <ul className="space-y-4 mb-6">
+                            {meal.foods_details.map((food: any, index: number) => (
+                              <li key={index}>
+                                <div className="flex items-start gap-2">
+                                  <span className="text-orange-500 mt-1 text-base">•</span>
+                                  <div className="flex-1">
+                                    <div className="text-sm">
+                                      <span className="font-normal">
+                                        {food.name} ({food.portionGrams || food.portion}g)
+                                      </span>
+                                      <span className="ml-2">- {food.calories} kcal</span>
+                                      {food.isEstimated && (
+                                        <span className="ml-2 text-muted-foreground">(estimado)</span>
                                       )}
                                     </div>
+                                    {food.description && (
+                                      <p className="mt-2 text-sm text-muted-foreground italic leading-relaxed">
+                                        {food.description}
+                                      </p>
+                                    )}
                                   </div>
-                                </li>
-                              ))}
-                            </ul>
-                          ) : (
-                            <ul className="space-y-2">
-                              <li className="text-sm flex items-start gap-2">
-                                <span className="text-orange-500 mt-0.5">•</span>
-                                <span>{meal.name} (600g) - {Math.round(meal.calories || 0)} kcal</span>
+                                </div>
                               </li>
-                            </ul>
-                          )}
-                          
-                          <div className="flex gap-2 mt-4">
-                            <Button variant="nutrition-outline" size="sm">
-                              Editar
-                            </Button>
-                            <Button variant="outline" size="sm">
-                              Duplicar
-                            </Button>
-                          </div>
+                            ))}
+                          </ul>
+                        ) : (
+                          <ul className="space-y-2 mb-6">
+                            <li className="text-sm flex items-start gap-2">
+                              <span className="text-orange-500 mt-0.5">•</span>
+                              <span>{meal.name.replace('Refeição: ', '')} - {Math.round(meal.calories || 0)} kcal</span>
+                            </li>
+                          </ul>
+                        )}
+                        
+                        <div className="flex gap-2">
+                          <Button className="bg-orange-500 hover:bg-orange-600 text-white border-0" size="sm">
+                            Editar
+                          </Button>
+                          <Button variant="outline" size="sm">
+                            Duplicar
+                          </Button>
                         </div>
-                      )}
+                      </div>
+                    )}
                   </div>
                 );
               })}
             </div>
           )}
-        </GymCard>
+        </div>
 
         {/* Meal Suggestions */}
         <GymCard
