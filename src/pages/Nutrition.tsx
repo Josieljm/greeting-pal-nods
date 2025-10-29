@@ -228,7 +228,9 @@ const Nutrition = () => {
             protein: functionData.totals.protein,
             carbs: functionData.totals.carbs,
             fat: functionData.totals.fat,
-            meal_time: new Date().toISOString()
+            meal_time: new Date().toISOString(),
+            foods_details: functionData.foods,
+            is_estimated: functionData.isEstimated || false
           });
         
         if (saveError) {
@@ -497,6 +499,11 @@ const Nutrition = () => {
                           <div className="flex items-center gap-2 text-sm text-muted-foreground">
                             <Clock className="w-3 h-3" />
                             {mealTime}
+                            {meal.is_estimated && (
+                              <Badge variant="secondary" className="text-xs bg-orange-500/20 text-orange-600 dark:text-orange-400">
+                                Estimado
+                              </Badge>
+                            )}
                           </div>
                         </div>
                       </div>
@@ -510,30 +517,38 @@ const Nutrition = () => {
 
                     {selectedMeal === meal.id && (
                       <div className="mt-4 pt-4 border-t border-border/50">
-                        <h4 className="font-medium mb-2">Alimentos identificados:</h4>
-                        <div className="text-sm text-muted-foreground">
-                          {meal.name}
-                        </div>
-                        <div className="mt-3 p-3 bg-muted/30 rounded-lg">
-                          <div className="grid grid-cols-2 gap-2 text-sm">
-                            <div>
-                              <span className="text-muted-foreground">Calorias:</span>
-                              <span className="ml-2 font-semibold">{Math.round(meal.calories || 0)} kcal</span>
-                            </div>
-                            <div>
-                              <span className="text-muted-foreground">Proteínas:</span>
-                              <span className="ml-2 font-semibold">{Math.round((meal.protein || 0) * 10) / 10}g</span>
-                            </div>
-                            <div>
-                              <span className="text-muted-foreground">Carboidratos:</span>
-                              <span className="ml-2 font-semibold">{Math.round((meal.carbs || 0) * 10) / 10}g</span>
-                            </div>
-                            <div>
-                              <span className="text-muted-foreground">Gorduras:</span>
-                              <span className="ml-2 font-semibold">{Math.round((meal.fat || 0) * 10) / 10}g</span>
-                            </div>
+                        <h4 className="font-medium mb-3">Alimentos identificados:</h4>
+                        
+                        {meal.foods_details && Array.isArray(meal.foods_details) ? (
+                          <ul className="space-y-3">
+                            {meal.foods_details.map((food: any, index: number) => (
+                              <li key={index} className="text-sm">
+                                <div className="flex items-start gap-2">
+                                  <span className="text-orange-500 mt-0.5">•</span>
+                                  <div className="flex-1">
+                                    <span className="font-medium">
+                                      {food.name} ({food.portionGrams || food.portion}g)
+                                    </span>
+                                    <span className="ml-2 text-muted-foreground">- {food.calories} kcal</span>
+                                    {food.isEstimated && (
+                                      <span className="ml-2 text-xs text-muted-foreground">(estimado)</span>
+                                    )}
+                                    {food.description && (
+                                      <p className="mt-1 text-xs text-muted-foreground italic leading-relaxed">
+                                        {food.description}
+                                      </p>
+                                    )}
+                                  </div>
+                                </div>
+                              </li>
+                            ))}
+                          </ul>
+                        ) : (
+                          <div className="text-sm text-muted-foreground">
+                            {meal.name}
                           </div>
-                        </div>
+                        )}
+                        
                         <div className="flex gap-2 mt-4">
                           <Button variant="nutrition-outline" size="sm">
                             Editar
