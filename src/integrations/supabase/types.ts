@@ -25,6 +25,7 @@ export type Database = {
           is_estimated: boolean | null
           meal_time: string
           name: string
+          notes: string | null
           protein: number | null
           updated_at: string
           user_id: string
@@ -39,6 +40,7 @@ export type Database = {
           is_estimated?: boolean | null
           meal_time?: string
           name: string
+          notes?: string | null
           protein?: number | null
           updated_at?: string
           user_id: string
@@ -53,6 +55,7 @@ export type Database = {
           is_estimated?: boolean | null
           meal_time?: string
           name?: string
+          notes?: string | null
           protein?: number | null
           updated_at?: string
           user_id?: string

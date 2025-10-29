@@ -230,7 +230,8 @@ const Nutrition = () => {
             fat: functionData.totals.fat,
             meal_time: new Date().toISOString(),
             foods_details: functionData.foods,
-            is_estimated: functionData.isEstimated || false
+            is_estimated: functionData.isEstimated || false,
+            notes: functionData.notes || ""
           });
         
         if (saveError) {
@@ -554,6 +555,16 @@ const Nutrition = () => {
                               <span>{meal.name.replace('Refeição: ', '')} - {Math.round(meal.calories || 0)} kcal</span>
                             </li>
                           </ul>
+                        )}
+
+                        {/* Descrição Detalhada */}
+                        {meal.notes && (
+                          <div className="mb-6 pb-4 border-b border-border/50">
+                            <h4 className="font-semibold mb-2 text-base">Descrição Detalhada:</h4>
+                            <p className="text-sm text-muted-foreground leading-relaxed">
+                              {meal.notes}
+                            </p>
+                          </div>
                         )}
                         
                         <div className="flex gap-2">
