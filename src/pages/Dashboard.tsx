@@ -24,6 +24,11 @@ const Dashboard = () => {
     fat: 0
   });
   const [caloriesBurned, setCaloriesBurned] = useState(0);
+  const [weeklyProgress, setWeeklyProgress] = useState({
+    workoutsCompleted: 0,
+    calorieGoalPercentage: 0,
+    consecutiveDays: 0
+  });
   
   useEffect(() => {
     const loadUserName = async () => {
@@ -116,6 +121,84 @@ const Dashboard = () => {
     };
 
     loadTodayCaloriesBurned();
+  }, [user]);
+
+  useEffect(() => {
+    const loadWeeklyProgress = async () => {
+      if (!user) return;
+
+      const sevenDaysAgo = new Date();
+      sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+      sevenDaysAgo.setHours(0, 0, 0, 0);
+
+      // Carregar treinos completos nos últimos 7 dias
+      const { data: workouts } = await supabase
+        .from('workout_history')
+        .select('id, completed_at')
+        .eq('user_id', user.id)
+        .gte('completed_at', sevenDaysAgo.toISOString());
+
+      const workoutsCompleted = workouts?.length || 0;
+
+      // Carregar dados de nutrição dos últimos 7 dias
+      const { data: weeklyMeals } = await supabase
+        .from('meals')
+        .select('total_calories, timestamp')
+        .eq('user_id', user.id)
+        .gte('timestamp', sevenDaysAgo.toISOString());
+
+      // Calcular meta calórica média
+      let calorieGoalPercentage = 0;
+      if (Array.isArray(weeklyMeals) && weeklyMeals.length > 0) {
+        const dailyCalories: { [key: string]: number } = {};
+        
+        weeklyMeals.forEach((meal: any) => {
+          const date = new Date(meal.timestamp).toISOString().split('T')[0];
+          dailyCalories[date] = (dailyCalories[date] || 0) + (Number(meal.total_calories) || 0);
+        });
+
+        const days = Object.keys(dailyCalories);
+        if (days.length > 0) {
+          const totalPercentage = days.reduce((acc, date) => {
+            return acc + Math.min((dailyCalories[date] / 2200) * 100, 100);
+          }, 0);
+          calorieGoalPercentage = Math.round(totalPercentage / days.length);
+        }
+      }
+
+      // Calcular dias consecutivos (com treinos ou refeições)
+      let consecutiveDays = 0;
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      
+      for (let i = 0; i < 30; i++) {
+        const checkDate = new Date(today);
+        checkDate.setDate(checkDate.getDate() - i);
+        const dateStr = checkDate.toISOString().split('T')[0];
+        
+        const hasWorkout = workouts?.some((w: any) => 
+          new Date(w.completed_at).toISOString().split('T')[0] === dateStr
+        );
+        
+        const hasMeal = weeklyMeals?.some((m: any) => 
+          new Date(m.timestamp).toISOString().split('T')[0] === dateStr
+        );
+        
+        if (hasWorkout || hasMeal) {
+          consecutiveDays++;
+        } else {
+          break;
+        }
+      }
+
+      setWeeklyProgress({
+        workoutsCompleted,
+        calorieGoalPercentage,
+        consecutiveDays
+      });
+    };
+
+    loadWeeklyProgress();
   }, [user]);
 
   const proteinPercentage = proteinGoal > 0 ? Math.round((nutritionData.protein / proteinGoal) * 100) : 0;
@@ -277,19 +360,19 @@ const Dashboard = () => {
           <div className="grid md:grid-cols-3 gap-6">
             <div className="text-center p-4 rounded-lg bg-gradient-fitness-subtle">
               <TrendingUp className="w-8 h-8 text-primary mx-auto mb-2" />
-              <div className="text-2xl font-bold text-primary">5</div>
+              <div className="text-2xl font-bold text-primary">{weeklyProgress.workoutsCompleted}</div>
               <div className="text-sm text-muted-foreground">Treinos Completos</div>
             </div>
             
             <div className="text-center p-4 rounded-lg bg-gradient-nutrition-subtle">
               <Target className="w-8 h-8 text-secondary mx-auto mb-2" />
-              <div className="text-2xl font-bold text-secondary">92%</div>
+              <div className="text-2xl font-bold text-secondary">{weeklyProgress.calorieGoalPercentage}%</div>
               <div className="text-sm text-muted-foreground">Meta Calórica</div>
             </div>
             
             <div className="text-center p-4 rounded-lg bg-muted">
               <Calendar className="w-8 h-8 text-muted-foreground mx-auto mb-2" />
-              <div className="text-2xl font-bold">7</div>
+              <div className="text-2xl font-bold">{weeklyProgress.consecutiveDays}</div>
               <div className="text-sm text-muted-foreground">Dias Consecutivos</div>
             </div>
           </div>
