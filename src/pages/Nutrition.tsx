@@ -477,8 +477,7 @@ const Nutrition = () => {
           ) : (
             <div className="space-y-4">
               {savedMeals.map((meal) => {
-                const mealTime = new Date(meal.timestamp).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
-                const foodsArray = Array.isArray(meal.foods) ? meal.foods : [];
+                const mealTime = new Date(meal.meal_time).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
                 
                 return (
                   <div
@@ -494,16 +493,13 @@ const Nutrition = () => {
                           <div className="flex items-center gap-2 text-sm text-muted-foreground">
                             <Clock className="w-3 h-3" />
                             {mealTime}
-                            {meal.is_estimated && (
-                              <Badge variant="secondary" className="text-xs">Estimado</Badge>
-                            )}
                           </div>
                         </div>
                       </div>
                       <div className="text-right">
-                        <div className="text-lg font-bold text-secondary">{Math.round(meal.total_calories)} kcal</div>
+                        <div className="text-lg font-bold text-secondary">{Math.round(meal.calories || 0)} kcal</div>
                         <div className="text-sm text-muted-foreground">
-                          P: {meal.total_protein}g • C: {meal.total_carbs}g • G: {meal.total_fat}g
+                          P: {Math.round((meal.protein || 0) * 10) / 10}g • C: {Math.round((meal.carbs || 0) * 10) / 10}g • G: {Math.round((meal.fat || 0) * 10) / 10}g
                         </div>
                       </div>
                     </div>
@@ -511,20 +507,29 @@ const Nutrition = () => {
                     {selectedMeal === meal.id && (
                       <div className="mt-4 pt-4 border-t border-border/50">
                         <h4 className="font-medium mb-2">Alimentos identificados:</h4>
-                        <ul className="space-y-1">
-                          {foodsArray.map((food: any, index: number) => (
-                            <li key={index} className="text-sm text-muted-foreground flex items-center gap-2">
-                              <div className="w-1 h-1 bg-secondary rounded-full" />
-                              {food.name} ({food.portionGrams || food.portion}g) - {food.calories} kcal
-                              {food.isEstimated && <span className="text-xs opacity-70">(estimado)</span>}
-                            </li>
-                          ))}
-                        </ul>
-                        {meal.notes && (
-                          <div className="mt-2 text-xs text-muted-foreground italic">
-                            {meal.notes}
+                        <div className="text-sm text-muted-foreground">
+                          {meal.name}
+                        </div>
+                        <div className="mt-3 p-3 bg-muted/30 rounded-lg">
+                          <div className="grid grid-cols-2 gap-2 text-sm">
+                            <div>
+                              <span className="text-muted-foreground">Calorias:</span>
+                              <span className="ml-2 font-semibold">{Math.round(meal.calories || 0)} kcal</span>
+                            </div>
+                            <div>
+                              <span className="text-muted-foreground">Proteínas:</span>
+                              <span className="ml-2 font-semibold">{Math.round((meal.protein || 0) * 10) / 10}g</span>
+                            </div>
+                            <div>
+                              <span className="text-muted-foreground">Carboidratos:</span>
+                              <span className="ml-2 font-semibold">{Math.round((meal.carbs || 0) * 10) / 10}g</span>
+                            </div>
+                            <div>
+                              <span className="text-muted-foreground">Gorduras:</span>
+                              <span className="ml-2 font-semibold">{Math.round((meal.fat || 0) * 10) / 10}g</span>
+                            </div>
                           </div>
-                        )}
+                        </div>
                         <div className="flex gap-2 mt-4">
                           <Button variant="nutrition-outline" size="sm">
                             Editar
