@@ -47,8 +47,8 @@ const Nutrition = () => {
         .from('meals')
         .select('*')
         .eq('user_id', session.session.user.id)
-        .gte('timestamp', today.toISOString())
-        .order('timestamp', { ascending: false });
+        .gte('meal_time', today.toISOString())
+        .order('meal_time', { ascending: false });
       
       if (error) {
         if (import.meta.env.DEV) {
