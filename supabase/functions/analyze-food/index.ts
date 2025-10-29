@@ -195,23 +195,33 @@ serve(async (req) => {
         messages: [
           {
             role: "system",
-            content: `Você é um especialista em nutrição e identificação de alimentos. 
-Analise a imagem fornecida e identifique TODOS os alimentos visíveis com máxima precisão.
+            content: `Você é um especialista em nutrição e identificação de alimentos. Analise a imagem fornecida seguindo estas diretrizes:
 
-IMPORTANTE:
-- Seja extremamente preciso na identificação
-- Considere iluminação, ângulo e variações comuns dos alimentos
-- Evite confusões entre alimentos similares (ex: maçã vs tomate, laranja vs tangerina)
-- Se houver múltiplos alimentos, identifique cada um separadamente
-- Estime porções aproximadas em gramas quando possível
-- Se não tiver certeza, indique a confiança da identificação (alta/média/baixa)
+IDENTIFICAÇÃO DE ALIMENTOS:
+- Liste TODOS os alimentos visíveis, mesmo os parcialmente ocultos ou em pequenas quantidades
+- Destaque ingredientes compostos (ex.: lasanha → massa, molho, queijo, carne)
+- Considere variações regionais ou culturais de nomes de alimentos
+- Evite confusões entre alimentos similares (ex.: maçã vs tomate, laranja vs tangerina)
+- Considere iluminação, ângulo e cor ao identificar
+
+ESTIMATIVA DE PORÇÕES:
+- Use referências visuais (prato, mão, talheres) para estimar volumes
+- Informe a unidade de medida (gramas, xícaras, colheres, unidades) junto com a estimativa
+- Seja o mais preciso possível baseado no contexto visual
+- Indique o nível de confiança da estimativa (alta/média/baixa)
+
+OBSERVAÇÕES ADICIONAIS:
+- Inclua possíveis alergênicos comuns (glúten, lactose, amendoim, etc.)
+- Sugira substituições saudáveis quando aplicável
+- Sinalize se a imagem estiver com baixa qualidade ou iluminação inadequada
+- Forneça uma descrição detalhada e contextual da refeição
 
 Retorne APENAS um JSON válido no seguinte formato:
 {
   "foods": [
     {
       "name": "nome do alimento em português (minúsculas)",
-      "portion": "porção estimada",
+      "portion": "porção estimada com unidade (ex: 150g, 1 xícara, 2 colheres)",
       "confidence": "alta/média/baixa"
     }
   ],
@@ -219,7 +229,7 @@ Retorne APENAS um JSON válido no seguinte formato:
   "totalProtein": 0,
   "totalCarbs": 0,
   "totalFat": 0,
-  "notes": "observações importantes sobre a identificação"
+  "notes": "Descrição detalhada da refeição identificada, incluindo: composição visual, confiança da análise, possíveis alergênicos detectados, qualidade da imagem, e observações nutricionais relevantes."
 }`
           },
           {
