@@ -9,6 +9,7 @@ import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import NutriAI from "@/components/NutriAI";
 import { NutritionGoalsDialog } from "@/components/NutritionGoalsDialog";
+import { FoodPhotoAnalyzer } from "@/components/FoodPhotoAnalyzer";
 
 const Nutrition = () => {
   const [selectedMeal, setSelectedMeal] = useState<string | null>(null);
@@ -768,6 +769,12 @@ const Nutrition = () => {
           </div>
         )}
       </div>
+      
+      {/* Food Photo Analyzer Component */}
+      <div className="max-w-7xl mx-auto px-4 pb-6">
+        <FoodPhotoAnalyzer />
+      </div>
+      
       <NutriAI />
     </Layout>
   );
