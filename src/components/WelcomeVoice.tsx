@@ -3,6 +3,13 @@ import { useVoice } from "@/hooks/useVoice";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 
+// Voice feature temporarily disabled due to ElevenLabs API limitations
+// To re-enable: get a valid ElevenLabs API key and uncomment the code below
+export const WelcomeVoice = () => {
+  return null;
+};
+
+/*
 export const WelcomeVoice = () => {
   const { user } = useAuth();
   const { speak } = useVoice();
@@ -42,3 +49,4 @@ export const WelcomeVoice = () => {
 
   return null;
 };
+*/
