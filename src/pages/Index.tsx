@@ -19,23 +19,8 @@ const Index = () => {
   const navigate = useNavigate();
   const location = useLocation();
 
-  // Redirecionar para onboarding se não completado
-  useEffect(() => {
-    if (!user) return; // Se não tem usuário, para.
-
-    // IMPEDE qualquer decisão de navegação até que o status de onboarding seja carregado.
-    if (loading) return;
-
-    const currentPath = location.pathname;
-
-    if (!onboardingCompleted && currentPath !== "/onboarding") {
-      // Usuário logado, onboarding PENDENTE, envia para /onboarding.
-      navigate("/onboarding");
-    } else if (onboardingCompleted && currentPath === "/onboarding") {
-      // Usuário logado, onboarding COMPLETO, envia para /dashboard.
-      navigate("/dashboard");
-    }
-  }, [user, onboardingCompleted, loading, location, navigate]);
+  // Não redirecionar automaticamente - usuário pode navegar livremente
+  // O onboarding será acessado apenas quando o usuário clicar em "Começar Agora"
 
   const handleProtectedAction = (path: string) => {
     if (user) {
