@@ -14,6 +14,42 @@ export type Database = {
   }
   public: {
     Tables: {
+      body_metrics: {
+        Row: {
+          bmi: number | null
+          body_fat_percentage: number | null
+          created_at: string
+          id: string
+          measurement_date: string
+          muscle_mass: number | null
+          notes: string | null
+          user_id: string
+          weight: number | null
+        }
+        Insert: {
+          bmi?: number | null
+          body_fat_percentage?: number | null
+          created_at?: string
+          id?: string
+          measurement_date?: string
+          muscle_mass?: number | null
+          notes?: string | null
+          user_id: string
+          weight?: number | null
+        }
+        Update: {
+          bmi?: number | null
+          body_fat_percentage?: number | null
+          created_at?: string
+          id?: string
+          measurement_date?: string
+          muscle_mass?: number | null
+          notes?: string | null
+          user_id?: string
+          weight?: number | null
+        }
+        Relationships: []
+      }
       calories_burned: {
         Row: {
           activity_type: string | null
@@ -194,6 +230,126 @@ export type Database = {
           updated_at?: string
           user_id?: string
           weight?: number | null
+        }
+        Relationships: []
+      }
+      progress_strength: {
+        Row: {
+          created_at: string
+          current_weight: number
+          exercise_name: string
+          id: string
+          initial_weight: number
+          target_weight: number
+          unit: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          current_weight: number
+          exercise_name: string
+          id?: string
+          initial_weight: number
+          target_weight: number
+          unit?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          current_weight?: number
+          exercise_name?: string
+          id?: string
+          initial_weight?: number
+          target_weight?: number
+          unit?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      user_achievements: {
+        Row: {
+          achievement_description: string
+          achievement_id: string
+          achievement_name: string
+          completed: boolean
+          completed_at: string | null
+          created_at: string
+          id: string
+          points: number
+          progress_current: number | null
+          progress_target: number | null
+          user_id: string
+        }
+        Insert: {
+          achievement_description: string
+          achievement_id: string
+          achievement_name: string
+          completed?: boolean
+          completed_at?: string | null
+          created_at?: string
+          id?: string
+          points?: number
+          progress_current?: number | null
+          progress_target?: number | null
+          user_id: string
+        }
+        Update: {
+          achievement_description?: string
+          achievement_id?: string
+          achievement_name?: string
+          completed?: boolean
+          completed_at?: string | null
+          created_at?: string
+          id?: string
+          points?: number
+          progress_current?: number | null
+          progress_target?: number | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      user_goals: {
+        Row: {
+          completed: boolean
+          created_at: string
+          current_value: number
+          deadline: string | null
+          goal_name: string
+          goal_type: string
+          id: string
+          target_value: number
+          unit: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          completed?: boolean
+          created_at?: string
+          current_value: number
+          deadline?: string | null
+          goal_name: string
+          goal_type: string
+          id?: string
+          target_value: number
+          unit: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          completed?: boolean
+          created_at?: string
+          current_value?: number
+          deadline?: string | null
+          goal_name?: string
+          goal_type?: string
+          id?: string
+          target_value?: number
+          unit?: string
+          updated_at?: string
+          user_id?: string
         }
         Relationships: []
       }
