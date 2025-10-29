@@ -85,7 +85,7 @@ export default function Workouts() {
 
   return (
     <Layout>
-      <div className="container mx-auto px-4 py-6 max-w-7xl">
+      <div className="w-full mx-auto px-4 py-6 max-w-7xl">
         {/* Header */}
         <div className="mb-8">
           <h1 className="text-4xl font-bold mb-2 bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent">
@@ -108,7 +108,7 @@ export default function Workouts() {
         </div>
 
         {/* Categories */}
-        <div className="flex gap-2 overflow-x-auto pb-4 mb-6 scrollbar-hide">
+        <div className="flex gap-2 overflow-x-auto pb-4 mb-6 scrollbar-hide -mx-4 px-4">
           {categories.map((category) => (
             <Button
               key={category.key}
@@ -196,7 +196,7 @@ export default function Workouts() {
             <p className="text-muted-foreground">Nenhum treino encontrado</p>
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-24">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 mb-24 w-full">
             {filteredWorkouts.map((workout) => (
               <WorkoutCard
                 key={workout.id}

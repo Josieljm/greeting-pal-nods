@@ -104,9 +104,9 @@ const Dashboard = () => {
   return (
     <Layout>
       <WelcomeVoice />
-      <div className="p-4 space-y-6 max-w-7xl mx-auto">
+      <div className="w-full px-4 py-6 space-y-6 max-w-7xl mx-auto">
         {/* Header */}
-        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 w-full">
           <div className="flex-1">
             <div className="flex items-center justify-between gap-2">
               <h1 className="text-3xl font-bold">Olá, {userName}! 👋</h1>
@@ -133,7 +133,7 @@ const Dashboard = () => {
         </div>
 
         {/* Stats Grid */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 w-full">
           {todayStats.map((stat, index) => (
             <Link key={index} to={stat.link}>
               <StatCard {...stat} />
@@ -142,7 +142,7 @@ const Dashboard = () => {
         </div>
 
         {/* Main Content Grid */}
-        <div className="grid lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6 w-full">
           {/* Today's Workout */}
           <GymCard 
             variant="fitness"
