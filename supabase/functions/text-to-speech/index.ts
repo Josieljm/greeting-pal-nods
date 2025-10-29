@@ -50,13 +50,10 @@ serve(async (req) => {
     });
 
     // Obter voice ID baseado no gênero
+    // Usando vozes padrão do ElevenLabs ou variáveis de ambiente personalizadas
     const voiceId = gender === 'female' 
-      ? Deno.env.get('ELEVENLABS_VOICE_FEMALE')
-      : Deno.env.get('ELEVENLABS_VOICE_MALE');
-
-    if (!voiceId) {
-      throw new Error(`Voice ID não configurado para gênero: ${gender}`);
-    }
+      ? (Deno.env.get('ELEVENLABS_VOICE_FEMALE') || 'EXAVITQu4vr4xnSDxMaL') // Sarah (voice feminina)
+      : (Deno.env.get('ELEVENLABS_VOICE_MALE') || 'TX3LPaxmHKxFdv7VOQHJ'); // Liam (voice masculina)
 
     const apiKey = Deno.env.get('ELEVENLABS_API_KEY');
     if (!apiKey) {
