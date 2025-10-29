@@ -8,13 +8,7 @@ import { useState, useRef, useEffect } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import NutriAI from "@/components/NutriAI";
-
-const nutritionGoals = {
-  calories: { target: 2200, unit: "kcal" },
-  protein: { target: 120, unit: "g" },
-  carbs: { target: 220, unit: "g" },
-  fat: { target: 60, unit: "g" }
-};
+import { NutritionGoalsDialog } from "@/components/NutritionGoalsDialog";
 
 const Nutrition = () => {
   const [selectedMeal, setSelectedMeal] = useState<string | null>(null);
@@ -24,11 +18,47 @@ const Nutrition = () => {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [savedMeals, setSavedMeals] = useState<any[]>([]);
   const [isLoadingMeals, setIsLoadingMeals] = useState(false);
+  const [nutritionGoals, setNutritionGoals] = useState({
+    calories: 2200,
+    protein: 120,
+    carbs: 220,
+    fat: 60
+  });
   const videoRef = useRef<HTMLVideoElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { toast } = useToast();
   
+  // Carregar metas nutricionais do perfil
+  const loadNutritionGoals = async () => {
+    try {
+      const { data: session } = await supabase.auth.getSession();
+      
+      if (!session?.session?.user) {
+        return;
+      }
+      
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('daily_calories_goal, daily_protein_goal, daily_carbs_goal, daily_fat_goal')
+        .eq('user_id', session.session.user.id)
+        .single();
+      
+      if (!error && data) {
+        setNutritionGoals({
+          calories: data.daily_calories_goal || 2200,
+          protein: data.daily_protein_goal || 120,
+          carbs: data.daily_carbs_goal || 220,
+          fat: data.daily_fat_goal || 60
+        });
+      }
+    } catch (error) {
+      if (import.meta.env.DEV) {
+        console.error("Erro ao carregar metas:", error);
+      }
+    }
+  };
+
   // Carregar refeições salvas
   const loadTodayMeals = async () => {
     setIsLoadingMeals(true);
@@ -67,6 +97,7 @@ const Nutrition = () => {
   };
   
   useEffect(() => {
+    loadNutritionGoals();
     loadTodayMeals();
   }, []);
 
@@ -302,7 +333,11 @@ const Nutrition = () => {
   };
 
   const getRemainingCalories = () => {
-    return nutritionGoals.calories.target - dailyTotals.calories;
+    return nutritionGoals.calories - dailyTotals.calories;
+  };
+
+  const handleGoalsUpdated = () => {
+    loadNutritionGoals();
   };
 
   return (
@@ -372,23 +407,30 @@ const Nutrition = () => {
         {/* Daily Progress */}
         <div className="grid lg:grid-cols-3 gap-6">
           {/* Nutrition Summary */}
-          <GymCard
-            variant="nutrition"
-            title="Resumo Diário"
-            description={`${getRemainingCalories()} kcal restantes`}
-            className="lg:col-span-2"
-          >
-            <div className="space-y-6">
+          <div className="lg:col-span-2">
+            <GymCard
+              variant="nutrition"
+              title="Resumo Diário"
+              description={`${getRemainingCalories()} kcal restantes`}
+              className="relative"
+            >
+              <div className="absolute top-6 right-6">
+                <NutritionGoalsDialog 
+                  currentGoals={nutritionGoals}
+                  onGoalsUpdated={handleGoalsUpdated}
+                />
+              </div>
+              <div className="space-y-6">
               {/* Calories Progress */}
               <div className="text-center">
                 <div className="text-4xl font-bold text-secondary mb-2">
                   {Math.round(dailyTotals.calories)}
                 </div>
                 <div className="text-muted-foreground">
-                  de {nutritionGoals.calories.target} kcal
+                  de {nutritionGoals.calories} kcal
                 </div>
                 <Progress 
-                  value={getProgressPercentage(dailyTotals.calories, nutritionGoals.calories.target)} 
+                  value={getProgressPercentage(dailyTotals.calories, nutritionGoals.calories)} 
                   className="mt-4 h-3"
                 />
               </div>
@@ -401,11 +443,11 @@ const Nutrition = () => {
                   </div>
                   <div className="text-sm text-muted-foreground mb-2">Proteínas</div>
                   <Progress 
-                    value={getProgressPercentage(dailyTotals.protein, nutritionGoals.protein.target)} 
+                    value={getProgressPercentage(dailyTotals.protein, nutritionGoals.protein)} 
                     className="h-1"
                   />
                   <div className="text-xs text-muted-foreground mt-1">
-                    Meta: {nutritionGoals.protein.target}g
+                    Meta: {nutritionGoals.protein}g
                   </div>
                 </div>
 
@@ -415,11 +457,11 @@ const Nutrition = () => {
                   </div>
                   <div className="text-sm text-muted-foreground mb-2">Carboidratos</div>
                   <Progress 
-                    value={getProgressPercentage(dailyTotals.carbs, nutritionGoals.carbs.target)} 
+                    value={getProgressPercentage(dailyTotals.carbs, nutritionGoals.carbs)} 
                     className="h-1"
                   />
                   <div className="text-xs text-muted-foreground mt-1">
-                    Meta: {nutritionGoals.carbs.target}g
+                    Meta: {nutritionGoals.carbs}g
                   </div>
                 </div>
 
@@ -429,16 +471,17 @@ const Nutrition = () => {
                   </div>
                   <div className="text-sm text-muted-foreground mb-2">Gorduras</div>
                   <Progress 
-                    value={getProgressPercentage(dailyTotals.fat, nutritionGoals.fat.target)} 
+                    value={getProgressPercentage(dailyTotals.fat, nutritionGoals.fat)} 
                     className="h-1"
                   />
                   <div className="text-xs text-muted-foreground mt-1">
-                    Meta: {nutritionGoals.fat.target}g
+                    Meta: {nutritionGoals.fat}g
                   </div>
                 </div>
               </div>
             </div>
           </GymCard>
+          </div>
 
           {/* Quick Actions */}
           <GymCard
