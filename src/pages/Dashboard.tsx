@@ -22,6 +22,7 @@ const Dashboard = () => {
     carbs: 0,
     fat: 0
   });
+  const [caloriesBurned, setCaloriesBurned] = useState(0);
   
   useEffect(() => {
     const loadUserName = async () => {
@@ -94,8 +95,26 @@ const Dashboard = () => {
     loadTodayNutrition();
   }, [user]);
 
+  useEffect(() => {
+    const loadTodayCaloriesBurned = async () => {
+      if (!user) return;
+
+      const today = new Date().toISOString().split('T')[0];
+      const { data: caloriesData } = await supabase
+        .from('calories_burned')
+        .select('calories')
+        .eq('user_id', user.id)
+        .eq('date', today);
+
+      const total = caloriesData?.reduce((sum, record) => sum + record.calories, 0) || 0;
+      setCaloriesBurned(total);
+    };
+
+    loadTodayCaloriesBurned();
+  }, [user]);
+
   const todayStats = [
-    { icon: <Flame className="w-6 h-6" />, title: "Calorias Queimadas", value: "420", change: "+15%", variant: "fitness" as const, link: "/stats/calories-burned" },
+    { icon: <Flame className="w-6 h-6" />, title: "Calorias Queimadas", value: `${caloriesBurned}`, change: caloriesBurned > 0 ? `${caloriesBurned} kcal` : "0 kcal", variant: "fitness" as const, link: "/stats/calories-burned" },
     { icon: <Droplets className="w-6 h-6" />, title: "Água Consumida", value: "1.8L", change: "+5%", variant: "default" as const, link: "/stats/hydration" },
     { icon: <Target className="w-6 h-6" />, title: "Meta de Proteína", value: "85g", change: "+12%", variant: "nutrition" as const, link: "/stats/protein-goal" },
     { icon: <ClockIcon className="w-6 h-6" />, title: "Tempo de Treino", value: "45min", variant: "fitness" as const, link: "/stats/workout-time" },
