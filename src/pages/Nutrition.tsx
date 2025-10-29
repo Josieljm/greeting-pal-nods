@@ -200,12 +200,16 @@ const Nutrition = () => {
         throw new Error(functionData?.error || "Resposta inválida da análise");
       }
 
-      // Formatar resultados para exibição completa
+      // Formatar resultados para exibição completa com todos os detalhes
       const foodsList = functionData.foods
         .map((food: any) => {
           const confidence = food.confidence === "alta" ? "✓" : 
                            food.confidence === "média" ? "~" : "?";
-          return `${confidence} ${food.name} (aproximadamente ${food.portionGrams || food.portion}g)`;
+          // Incluir nome + descrição detalhada se disponível + porção
+          const description = food.portion && food.portion !== `${food.portionGrams}g` 
+            ? food.portion 
+            : '';
+          return `${confidence} ${food.name}${description ? ` ${description}` : ''} (aproximadamente ${food.portionGrams}g)`;
         })
         .join(" ~ ");
 
@@ -238,11 +242,11 @@ const Nutrition = () => {
           // Recarregar lista de refeições para atualizar o resumo
           await loadTodayMeals();
           
-          // Toast com análise completa
+          // Toast com análise completa e detalhada
           toast({
             title: "Análise Concluída! 🎉",
-            description: `Alimentos identificados: ${foodsList} ✨ Total: ${Math.round(functionData.totals.calories)} kcal | Proteínas: ${functionData.totals.protein}g | Carbs: ${functionData.totals.carbs}g | Gorduras: ${functionData.totals.fat}g`,
-            duration: 8000,
+            description: `Alimentos identificados: ${foodsList} ✨ Total: ${Math.round(functionData.totals.calories)} kcal | Proteínas: ${Math.round(functionData.totals.protein * 10) / 10}g | Carbs: ${Math.round(functionData.totals.carbs * 10) / 10}g | Gorduras: ${Math.round(functionData.totals.fat * 10) / 10}g`,
+            duration: 10000,
           });
         }
       }
