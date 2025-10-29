@@ -6,6 +6,7 @@ import { Card } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { ArrowLeft, Play, Pause, SkipForward, Volume2, VolumeX } from "lucide-react";
 import { toast } from "sonner";
+import { translateExercise } from "@/lib/exerciseTranslations";
 
 interface Exercise {
   name: string;
@@ -214,7 +215,7 @@ export default function WorkoutPlayer() {
 
           {/* Exercise Name */}
           <h1 className="text-4xl font-bold mb-8 animate-fade-in">
-            {isResting ? "Descanse" : currentExercise.name}
+            {isResting ? "Descanse" : translateExercise(currentExercise.name)}
           </h1>
 
           {/* Timer */}
@@ -229,7 +230,7 @@ export default function WorkoutPlayer() {
           {!isResting && currentExerciseIndex < workout.exercises_data.length - 1 && (
             <div className="mb-6 p-4 bg-muted/50 rounded-lg">
               <p className="text-sm text-muted-foreground mb-1">Próximo:</p>
-              <p className="font-medium">{workout.exercises_data[currentExerciseIndex + 1].name}</p>
+              <p className="font-medium">{translateExercise(workout.exercises_data[currentExerciseIndex + 1].name)}</p>
             </div>
           )}
 
