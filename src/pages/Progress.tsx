@@ -8,18 +8,19 @@ import { TrendingUp, Target, Calendar, Award, Flame, Dumbbell, Scale, Clock } fr
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import { useState, useEffect } from "react";
+import { useProgressTracking } from "@/hooks/useProgressTracking";
+import { useStrengthProgress } from "@/hooks/useStrengthProgress";
+import { useBodyMetrics } from "@/hooks/useBodyMetrics";
+import { UpdateMetricsDialog } from "@/components/UpdateMetricsDialog";
+import { SetGoalsDialog } from "@/components/SetGoalsDialog";
 
 const Progress = () => {
   const { user } = useAuth();
-  const [weeklyStats, setWeeklyStats] = useState({
-    workouts: 0,
-    calories: 0,
-    nutritionGoal: 0,
-    workoutTime: 0
-  });
-  const [progressData, setProgressData] = useState<any[]>([]);
+  const { weeklyStats } = useProgressTracking();
+  const { progressData, addNewExercise, calculateProgress } = useStrengthProgress();
+  const { bodyMetrics, updateBodyMetrics } = useBodyMetrics();
+  
   const [achievements, setAchievements] = useState<any[]>([]);
-  const [bodyMetrics, setBodyMetrics] = useState<any>(null);
   const [monthlyStats, setMonthlyStats] = useState({
     workoutsCompleted: 0,
     caloriesBurned: 0,
@@ -31,76 +32,8 @@ const Progress = () => {
     aiAnalyses: 0
   });
   const [goals, setGoals] = useState<any[]>([]);
+
   useEffect(() => {
-    const loadWeeklyStats = async () => {
-      if (!user) return;
-
-      const sevenDaysAgo = new Date();
-      sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
-
-      // Treinos completos
-      const { data: workouts } = await supabase
-        .from('workout_history')
-        .select('id, duration_seconds, calories_burned')
-        .eq('user_id', user.id)
-        .gte('completed_at', sevenDaysAgo.toISOString());
-
-      const workoutsCount = workouts?.length || 0;
-      const totalCalories = workouts?.reduce((sum, w) => sum + (w.calories_burned || 0), 0) || 0;
-      const totalSeconds = workouts?.reduce((sum, w) => sum + (w.duration_seconds || 0), 0) || 0;
-      const totalHours = Math.round((totalSeconds / 3600) * 10) / 10;
-
-      // Meta nutricional
-      const { data: meals } = await supabase
-        .from('meals')
-        .select('total_calories, timestamp')
-        .eq('user_id', user.id)
-        .gte('timestamp', sevenDaysAgo.toISOString());
-
-      let nutritionGoal = 0;
-      if (meals && meals.length > 0) {
-        const dailyCalories: { [key: string]: number } = {};
-        meals.forEach((meal: any) => {
-          const date = new Date(meal.timestamp).toISOString().split('T')[0];
-          dailyCalories[date] = (dailyCalories[date] || 0) + (Number(meal.total_calories) || 0);
-        });
-        const days = Object.keys(dailyCalories).length;
-        if (days > 0) {
-          const totalPercentage = Object.values(dailyCalories).reduce((acc, cal) => 
-            acc + Math.min((cal / 2200) * 100, 100), 0
-          );
-          nutritionGoal = Math.round(totalPercentage / days);
-        }
-      }
-
-      setWeeklyStats({
-        workouts: workoutsCount,
-        calories: totalCalories,
-        nutritionGoal,
-        workoutTime: totalHours
-      });
-    };
-
-    const loadProgressData = async () => {
-      if (!user) return;
-
-      const { data } = await supabase
-        .from('progress_strength')
-        .select('*')
-        .eq('user_id', user.id)
-        .order('exercise_name');
-
-      if (data) {
-        setProgressData(data.map(d => ({
-          exercise: d.exercise_name,
-          startWeight: Number(d.initial_weight),
-          currentWeight: Number(d.current_weight),
-          targetWeight: Number(d.target_weight),
-          unit: d.unit
-        })));
-      }
-    };
-
     const loadAchievements = async () => {
       if (!user) return;
 
@@ -122,34 +55,12 @@ const Progress = () => {
       }
     };
 
-    const loadBodyMetrics = async () => {
-      if (!user) return;
-
-      const { data } = await supabase
-        .from('body_metrics')
-        .select('*')
-        .eq('user_id', user.id)
-        .order('measurement_date', { ascending: false })
-        .limit(1)
-        .maybeSingle();
-
-      if (data) {
-        setBodyMetrics({
-          weight: Number(data.weight),
-          bodyFat: Number(data.body_fat_percentage),
-          muscleMass: Number(data.muscle_mass),
-          bmi: Number(data.bmi)
-        });
-      }
-    };
-
     const loadMonthlyStats = async () => {
       if (!user) return;
 
       const thirtyDaysAgo = new Date();
       thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
 
-      // Treinos do mês
       const { data: monthWorkouts } = await supabase
         .from('workout_history')
         .select('calories_burned, duration_seconds, completed_at')
@@ -161,7 +72,6 @@ const Progress = () => {
       const totalSeconds = monthWorkouts?.reduce((sum, w) => sum + (w.duration_seconds || 0), 0) || 0;
       const totalTime = Math.round((totalSeconds / 3600) * 10) / 10;
 
-      // Refeições do mês
       const { data: monthMeals } = await supabase
         .from('meals')
         .select('total_calories, total_protein, timestamp')
@@ -170,7 +80,6 @@ const Progress = () => {
 
       const mealsRegistered = monthMeals?.length || 0;
       
-      // Calcular dias que atingiram meta calórica
       const dailyCalories: { [key: string]: number } = {};
       monthMeals?.forEach((meal: any) => {
         const date = new Date(meal.timestamp).toISOString().split('T')[0];
@@ -178,7 +87,6 @@ const Progress = () => {
       });
       const calorieGoalDays = Object.values(dailyCalories).filter(cal => cal >= 1800 && cal <= 2400).length;
 
-      // Proteína média por dia
       const dailyProtein: { [key: string]: number } = {};
       monthMeals?.forEach((meal: any) => {
         const date = new Date(meal.timestamp).toISOString().split('T')[0];
@@ -187,7 +95,6 @@ const Progress = () => {
       const avgProtein = Object.keys(dailyProtein).length > 0 ?
         Math.round(Object.values(dailyProtein).reduce((a, b) => a + b, 0) / Object.keys(dailyProtein).length) : 0;
 
-      // Calcular streak
       let currentStreak = 0;
       const today = new Date();
       for (let i = 0; i < 30; i++) {
@@ -216,7 +123,7 @@ const Progress = () => {
         mealsRegistered,
         calorieGoalDays,
         avgProtein,
-        aiAnalyses: mealsRegistered // Assumindo que todas refeições foram analisadas
+        aiAnalyses: mealsRegistered
       });
     };
 
@@ -243,23 +150,40 @@ const Progress = () => {
       }
     };
 
-    loadWeeklyStats();
-    loadProgressData();
     loadAchievements();
-    loadBodyMetrics();
     loadMonthlyStats();
     loadGoals();
   }, [user]);
 
-  const calculateProgress = (start: number, current: number, target: number) => {
-    return Math.min(((current - start) / (target - start)) * 100, 100);
-  };
-
   const weeklyStatsDisplay = [
-    { icon: <Dumbbell className="w-6 h-6" />, title: "Treinos Completos", value: weeklyStats.workouts.toString(), change: "+25%", variant: "fitness" as const },
-    { icon: <Flame className="w-6 h-6" />, title: "Calorias Queimadas", value: weeklyStats.calories >= 1000 ? `${(weeklyStats.calories / 1000).toFixed(1)}K` : weeklyStats.calories.toString(), change: "+18%", variant: "fitness" as const },
-    { icon: <Target className="w-6 h-6" />, title: "Meta Nutricional", value: `${weeklyStats.nutritionGoal}%`, change: "+8%", variant: "nutrition" as const },
-    { icon: <Clock className="w-6 h-6" />, title: "Tempo de Treino", value: `${weeklyStats.workoutTime}h`, change: "+12%", variant: "default" as const },
+    { 
+      icon: <Dumbbell className="w-6 h-6" />, 
+      title: "Treinos Completos", 
+      value: weeklyStats.workouts.toString(), 
+      change: weeklyStats.workoutsChange > 0 ? `+${weeklyStats.workoutsChange}%` : `${weeklyStats.workoutsChange}%`, 
+      variant: "fitness" as const 
+    },
+    { 
+      icon: <Flame className="w-6 h-6" />, 
+      title: "Calorias Queimadas", 
+      value: weeklyStats.calories >= 1000 ? `${(weeklyStats.calories / 1000).toFixed(1)}K` : weeklyStats.calories.toString(), 
+      change: weeklyStats.caloriesChange > 0 ? `+${weeklyStats.caloriesChange}%` : `${weeklyStats.caloriesChange}%`, 
+      variant: "fitness" as const 
+    },
+    { 
+      icon: <Target className="w-6 h-6" />, 
+      title: "Meta Nutricional", 
+      value: `${weeklyStats.nutritionGoal}%`, 
+      change: weeklyStats.nutritionChange > 0 ? `+${weeklyStats.nutritionChange}%` : `${weeklyStats.nutritionChange}%`, 
+      variant: "nutrition" as const 
+    },
+    { 
+      icon: <Clock className="w-6 h-6" />, 
+      title: "Tempo de Treino", 
+      value: `${weeklyStats.workoutTime}h`, 
+      change: weeklyStats.timeChange > 0 ? `+${weeklyStats.timeChange}%` : `${weeklyStats.timeChange}%`, 
+      variant: "default" as const 
+    },
   ];
 
   return (
@@ -330,10 +254,7 @@ const Progress = () => {
                 </div>
               ))}
               
-              <Button variant="fitness" className="w-full mt-4">
-                <Target className="w-4 h-4" />
-                Definir Novas Metas
-              </Button>
+              <SetGoalsDialog onAddExercise={addNewExercise} />
             </div>
           </GymCard>
 
@@ -389,10 +310,7 @@ const Progress = () => {
                 </p>
               )}
               
-              <Button variant="outline" className="w-full">
-                <TrendingUp className="w-4 h-4" />
-                Atualizar Medidas
-              </Button>
+              <UpdateMetricsDialog onUpdate={updateBodyMetrics} />
             </div>
           </GymCard>
         </div>
